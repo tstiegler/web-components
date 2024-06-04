@@ -268,6 +268,7 @@ export const ColumnBaseMixin = (superClass) =>
     static get observers() {
       return [
         '_widthChanged(width, _headerCell, _footerCell, _cells)',
+        '_minWidthChanged(minWidth, _headerCell, _footerCell, _cells)',
         '_frozenChanged(frozen, _headerCell, _footerCell, _cells)',
         '_frozenToEndChanged(frozenToEnd, _headerCell, _footerCell, _cells)',
         '_flexGrowChanged(flexGrow, _headerCell, _footerCell, _cells)',
@@ -404,6 +405,17 @@ export const ColumnBaseMixin = (superClass) =>
       this._allCells.forEach((cell) => {
         cell.style.width = width;
       });
+    }
+
+    /** @private */
+    _minWidthChanged() {
+      if (this.parentElement && this.parentElement._columnPropChanged) {
+        this.parentElement._columnPropChanged('minWidth');
+      }
+
+      if (this._grid.recalculateColumnWidths && !this._grid.__pendingRecalculateColumnWidths) {
+        this._grid.recalculateColumnWidths();
+      }
     }
 
     /** @private */
@@ -939,6 +951,15 @@ export const GridColumnMixin = (superClass) =>
         autoWidth: {
           type: Boolean,
           value: false,
+        },
+
+        /**
+         * If a column is set to use autoWidth, force that column to have a minimum width to which the column
+         * can not be resized under.
+         */
+        minWidth: {
+          type: String,
+          sync: true,
         },
 
         /**

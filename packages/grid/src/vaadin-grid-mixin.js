@@ -462,8 +462,22 @@ export const GridMixin = (superClass) =>
     __getAutoWidthCellsMaxWidth(col) {
       // Note: _allCells only contains cells which are currently rendered in DOM
       return col._allCells.reduce((width, cell) => {
-        // Add 1px buffer to the offset width to avoid too narrow columns (sub-pixel rendering)
-        return cell.__measuringAutoWidth ? Math.max(width, cell.offsetWidth + 1) : width;
+        let resultWidth = width;
+
+        if (cell.__measuringAutoWidth) {
+          // Add 1px buffer to the offset width to avoid too narrow columns (sub-pixel rendering)
+          let autoWidth = Math.max(width, cell.offsetWidth + 1);
+
+          const minWidth = col.minWidth ? parseInt(col.minWidth, 10) : 0;
+          if (autoWidth < minWidth) {
+            autoWidth = minWidth;
+            col.flexGrow = 0;
+          }
+
+          resultWidth = autoWidth;
+        }
+
+        return resultWidth;
       }, 0);
     }
 

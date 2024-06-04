@@ -57,14 +57,18 @@ export const ColumnResizingMixin = (superClass) =>
         // Resize the target column
         if (targetCell.offsetWidth) {
           const style = getComputedStyle(targetCell._content);
-          const minWidth =
-            10 +
-            parseInt(style.paddingLeft) +
-            parseInt(style.paddingRight) +
-            parseInt(style.borderLeftWidth) +
-            parseInt(style.borderRightWidth) +
-            parseInt(style.marginLeft) +
-            parseInt(style.marginRight);
+
+          let minWidth = column.minWidth ? parseInt(column.minWidth, 10) : undefined;
+          if (!minWidth) {
+            minWidth =
+              10 +
+              parseInt(style.paddingLeft) +
+              parseInt(style.paddingRight) +
+              parseInt(style.borderLeftWidth) +
+              parseInt(style.borderRightWidth) +
+              parseInt(style.marginLeft) +
+              parseInt(style.marginRight);
+          }
 
           let maxWidth;
 
